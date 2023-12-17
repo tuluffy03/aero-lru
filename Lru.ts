@@ -11,7 +11,7 @@ export class Lru<K, T, V = { index: number; data: T }> {
         this.dLinkedListCase = new DLinkedLink<T>();
     }
 
-    getter = (key: K): T => {
+    get = (key: K): T => {
         if (this.map.has(key)) {
             const {index} = this.map.get(key);
 
@@ -30,7 +30,7 @@ export class Lru<K, T, V = { index: number; data: T }> {
         return undefined;
     }
 
-    setter = (key: K, {data}: V) => {
+    set = (key: K, {data}: V) => {
         /**
          * 如果超过了容量
          */
