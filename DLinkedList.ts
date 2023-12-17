@@ -158,6 +158,15 @@ class DLinkedLink<T> {
     };
 
     /**
+     * 删除尾节点
+     */
+    removeTail = () => {
+        this.linkedList.front.prev = this.linkedList.tail.prev;
+        this.linkedList.tail.prev.next = this.linkedList.front;
+        this.linkedList.tail = this.linkedList.tail.prev;
+    };
+
+    /**
      * 删除链表指定索引的节点
      */
     removeByIndex = (idx: number): T => {

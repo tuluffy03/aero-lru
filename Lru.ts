@@ -1,32 +1,51 @@
-import {LinkedLink} from './DLinkedList';
-import DLinkedList from './DLinkedList';
+import DLinkedLink from './DLinkedList';
 
-export class Lru<K, V extends K> {
+export class Lru<K, T, V = { index: number; data: T }> {
+    size: number;
     map: Map<K, V>;
-    dLinkedList: LinkedLink<V>;
+    dLinkedListCase: DLinkedLink<T>;
 
-    constructor() {
+    constructor(size: number) {
+        this.size = size;
         this.map = new Map<K, V>();
-        this.dLinkedList = (new DLinkedList<V>()).init();
+        this.dLinkedListCase = new DLinkedLink<T>();
     }
 
-    getter(key: K) {
-        const isExist = this.map.has(key);
+    getter = (key: K): T => {
+        if (this.map.has(key)) {
+            const {index} = this.map.get(key);
 
-        if (isExist) {
-            /**
-             * 将当前节点移动到头节点的位置
-             */
+            /* 根据索引删除节点 */
+            const data = this.dLinkedListCase.removeByIndex(index);
 
-            return this.map.get(key);
+            /* 将被删除的节点作为头节点插入 */
+            this.dLinkedListCase.insertFront(data);
+
+            /* 更新 Map 信息 */
+            this.map.set(key, {index: 0, data});
+
+            return data;
         }
 
         return undefined;
     }
 
-    setter(key: K) {
-        /* 如果容量超过了最大限制，删除尾节点 */
-
-        /* 将新节点插入到头部 */
+    setter = (key: K, {data}: V) => {
+        /**
+         * 如果超过了容量
+         */
+        if (this.dLinkedListCase.length() >= this.size) {
+            /* 删除尾节点 */
+            this.dLinkedListCase.removeTail();
+            /* 将值在头节点插入 */
+            this.dLinkedListCase.insertFront(data);
+            /* 并存入 Map 中 */
+            this.map.set(key, {index: 0, data});
+        } else {
+            /* 将新节点插入到头部 */
+            this.dLinkedListCase.insertFront(data);
+            /* 并存入 Map 中 */
+            this.map.set(key, {index: this.dLinkedListCase.length(), data});
+        }
     }
 }
